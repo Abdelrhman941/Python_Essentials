@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Gotchas & Advanced Features - مرجع شامل</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Noto Sans Arabic', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        .code-font {
+            font-family: 'Fira Code', 'Courier New', monospace;
+            direction: ltr;
+            text-align: left;
+        }
+        
+        .syntax-highlight {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+            overflow-x: auto;
+            direction: ltr;
+            text-align: left;
+        }
+        
+        .keyword { color: #d73a49; font-weight: bold; }
+        .string { color: #032f62; }
+        .comment { color: #6a737d; font-style: italic; }
+        .function { color: #6f42c1; }
+        .number { color: #005cc5; }
+        
+        .gotcha-box {
+            border-right: 4px solid #dc3545;
+            background: #fff5f5;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .solution-box {
+            border-right: 4px solid #28a745;
+            background: #f8fff8;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .warning-box {
+            border-right: 4px solid #ffc107;
+            background: #fffdf5;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .info-box {
+            border-right: 4px solid #17a2b8;
+            background: #f5fdff;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        h1, h2, h3 {
+            color: #2d3748;
+            font-weight: 600;
+        }
+        
+        .toc-link {
+            color: #4a5568;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        
+        .toc-link:hover {
+            background: #edf2f7;
+            color: #2d3748;
+        }
+        
+        .section-divider {
+            border-top: 2px solid #e2e8f0;
+            margin: 2rem 0;
+        }
+        
+        @media print {
+            .no-print { display: none; }
+            .page-break { page-break-before: always; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 leading-relaxed">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+            <div class="text-center">
+                <h1 class="text-4xl font-bold text-gray-800 mb-4">
+                    <i class="fas fa-python text-blue-600 ml-3"></i>
+                    Python Gotchas & Advanced Features
+                </h1>
+                <p class="text-xl text-gray-600 mb-4">مرجع شامل للمشاكل الشائعة والحلول العملية</p>
+                <div class="flex justify-center space-x-4 text-sm text-gray-500">
+                    <span><i class="fas fa-code ml-1"></i> +200 مثال عملي</span>
+                    <span><i class="fas fa-lightbulb ml-1"></i> أفضل الممارسات</span>
+                    <span><i class="fas fa-bug ml-1"></i> حلول للمشاكل الشائعة</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table of Contents -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-center">
+                <i class="fas fa-list ml-2"></i>
+                فهرس المحتويات
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    <a href="#mutable-defaults" class="toc-link block">
+                        <i class="fas fa-exclamation-triangle text-red-500 ml-2"></i>
+                        المعاملات الافتراضية المتغيرة
+                    </a>
+                    <a href="#tuple-immutability" class="toc-link block">
+                        <i class="fas fa-lock text-blue-500 ml-2"></i>
+                        خرافة عدم تغيير الـ Tuples
+                    </a>
+                    <a href="#dictionary-gotchas" class="toc-link block">
+                        <i class="fas fa-hashtag text-green-500 ml-2"></i>
+                        مشاكل الـ Dictionary والـ Hash
+                    </a>
+                    <a href="#boolean-context" class="toc-link block">
+                        <i class="fas fa-check-circle text-purple-500 ml-2"></i>
+                        Boolean Context للكائنات
+                    </a>
+                    <a href="#function-gotchas" class="toc-link block">
+                        <i class="fas fa-function text-orange-500 ml-2"></i>
+                        مشاكل الـ Functions
+                    </a>
+                </div>
+                <div class="space-y-2">
+                    <a href="#oop-encapsulation" class="toc-link block">
+                        <i class="fas fa-shield-alt text-indigo-500 ml-2"></i>
+                        الـ OOP والـ Encapsulation
+                    </a>
+                    <a href="#integer-caching" class="toc-link block">
+                        <i class="fas fa-memory text-teal-500 ml-2"></i>
+                        Integer Caching السرية
+                    </a>
+                    <a href="#loop-gotchas" class="toc-link block">
+                        <i class="fas fa-sync text-pink-500 ml-2"></i>
+                        مشاكل الـ For Loops
+                    </a>
+                    <a href="#advanced-features" class="toc-link block">
+                        <i class="fas fa-star text-yellow-500 ml-2"></i>
+                        ميزات متقدمة
+                    </a>
+                    <a href="#best-practices" class="toc-link block">
+                        <i class="fas fa-thumbs-up text-emerald-500 ml-2"></i>
+                        أفضل الممارسات
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mutable Default Parameters -->
+        <div id="mutable-defaults" class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-3xl font-bold mb-6 text-red-600">
+                <i class="fas fa-exclamation-triangle ml-3"></i>
+                المعاملات الافتراضية المتغيرة
+            </h2>
+            
+            <div class="gotcha-box">
+                <h3 class="text-xl font-semibold mb-3 text-red-700">
+                    <i class="fas fa-bug ml-2"></i>
+                    المشكلة الشائعة
+                </h3>
+                <p class="mb-4">
+                    كتير من الـ Python developers بيقعوا في الفخ ده ومش بيفهموا ليه الـ function بتفتكر القيم القديمة!
+                </p>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="keyword">def</span> <span class="function">add_item</span>(item, target_list=[]):
+    target_list.append(item)
+    <span class="keyword">return</span> target_list
+
+<span class="comment"># هيحصل إيه؟</span>
+<span class="keyword">print</span>(add_item(<span class="string">"apple"</span>))      <span class="comment"># ['apple']</span>
+<span class="keyword">print</span>(add_item(<span class="string">"banana"</span>))     <span class="comment"># ['apple', 'banana'] 😱</span>
+<span class="keyword">print</span>(add_item(<span class="string">"orange"</span>))     <span class="comment"># ['apple', 'banana', 'orange'] 😱</span></code></pre>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h3 class="text-xl font-semibold mb-3 text-blue-700">
+                    <i class="fas fa-info-circle ml-2"></i>
+                    ليه بيحصل كده؟
+                </h3>
+                <p class="mb-4">
+                    الـ default parameters بتتم evaluation مرة واحدة بس لما الـ function تتعرف، مش في كل مرة تتستدعى فيها.
+                </p>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="comment"># الـ empty list بتتخلق مرة واحدة بس!</span>
+<span class="keyword">def</span> <span class="function">bad_function</span>(x, my_list=[]):
+    <span class="comment"># نفس الـ list في كل استدعاء</span>
+    <span class="keyword">print</span>(<span class="string">f"List ID: {id(my_list)}"</span>)
+    my_list.append(x)
+    <span class="keyword">return</span> my_list
+
+bad_function(<span class="number">1</span>)  <span class="comment"># List ID: 140234567890</span>
+bad_function(<span class="number">2</span>)  <span class="comment"># List ID: 140234567890 (نفس الـ ID!)</span></code></pre>
+                </div>
+            </div>
+
+            <div class="solution-box">
+                <h3 class="text-xl font-semibold mb-3 text-green-700">
+                    <i class="fas fa-check-circle ml-2"></i>
+                    الحل الصحيح
+                </h3>
+                <p class="mb-4">
+                    استخدم <code class="bg-gray-200 px-2 py-1 rounded">None</code> كـ default value وخلق الـ object جوا الـ function:
+                </p>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="keyword">def</span> <span class="function">add_item_correctly</span>(item, target_list=None):
+    <span class="keyword">if</span> target_list <span class="keyword">is</span> None:
+        target_list = []  <span class="comment"># list جديدة في كل استدعاء</span>
+    target_list.append(item)
+    <span class="keyword">return</span> target_list
+
+<span class="comment"># دلوقتي شغال صح!</span>
+<span class="keyword">print</span>(add_item_correctly(<span class="string">"apple"</span>))   <span class="comment"># ['apple']</span>
+<span class="keyword">print</span>(add_item_correctly(<span class="string">"banana"</span>))  <span class="comment"># ['banana'] ✅</span>
+<span class="keyword">print</span>(add_item_correctly(<span class="string">"orange"</span>))  <span class="comment"># ['orange'] ✅</span></code></pre>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h3 class="text-xl font-semibold mb-3 text-yellow-700">
+                    <i class="fas fa-warning ml-2"></i>
+                    متى ممكن تستخدم المشكلة دي لصالحك؟
+                </h3>
+                <p class="mb-4">
+                    في حالات نادرة، ممكن تستخدم الـ behavior ده لعمل caching أو singleton pattern:
+                </p>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="keyword">def</span> <span class="function">get_cache</span>(cache={}):
+    <span class="comment"># استخدام مقصود للـ mutable default</span>
+    <span class="keyword">return</span> cache
+
+<span class="keyword">def</span> <span class="function">expensive_calculation</span>(x, cache={}):
+    <span class="keyword">if</span> x <span class="keyword">in</span> cache:
+        <span class="keyword">print</span>(<span class="string">"من الـ cache"</span>)
+        <span class="keyword">return</span> cache[x]
+    
+    <span class="comment"># عملية معقدة</span>
+    result = x ** <span class="number">2</span> + x * <span class="number">10</span>
+    cache[x] = result
+    <span class="keyword">return</span> result</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tuple Immutability -->
+        <div id="tuple-immutability" class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-3xl font-bold mb-6 text-blue-600">
+                <i class="fas fa-lock ml-3"></i>
+                خرافة عدم تغيير الـ Tuples
+            </h2>
+            
+            <div class="gotcha-box">
+                <h3 class="text-xl font-semibold mb-3 text-red-700">
+                    <i class="fas fa-exclamation-triangle ml-2"></i>
+                    الفهم الخاطئ الشائع
+                </h3>
+                <p class="mb-4">
+                    كتير من الناس بيفتكروا إن الـ tuple "immutable" يعني إن محتوياته ما تتغيرش خالص. ده مش صحيح!
+                </p>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="comment"># الـ tuple نفسه immutable، لكن محتوياته؟</span>
+my_list = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]
+my_tuple = (my_list, <span class="string">"text"</span>)
+
+<span class="keyword">print</span>(my_tuple)  <span class="comment"># ([1, 2, 3], 'text')</span>
+
+<span class="comment"># تغيير محتوى الـ list جوا الـ tuple</span>
+my_list.append(<span class="number">4</span>)
+<span class="keyword">print</span>(my_tuple)  <span class="comment"># ([1, 2, 3, 4], 'text') 😱</span></code></pre>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h3 class="text-xl font-semibold mb-3 text-blue-700">
+                    <i class="fas fa-lightbulb ml-2"></i>
+                    الفهم الصحيح
+                </h3>
+                <p class="mb-4">
+                    الـ tuple immutable من ناحية إنك مش تقدر تغير إيه اللي بيشاور عليه، لكن لو اللي بيشاور عليه mutable object، فده يتغير عادي.
+                </p>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="comment"># الـ tuple structure immutable</span>
+my_tuple = ([<span class="number">1</span>, <span class="number">2</span>], {<span class="string">"key"</span>: <span class="string">"value"</span>})
+
+<span class="comment"># ده هيشتغل - تغيير محتوى الـ mutable objects</span>
+my_tuple[<span class="number">0</span>].append(<span class="number">3</span>)
+my_tuple[<span class="number">1</span>][<span class="string">"new_key"</span>] = <span class="string">"new_value"</span>
+
+<span class="comment"># ده مش هيشتغل - تغيير الـ tuple نفسه</span>
+<span class="keyword">try</span>:
+    my_tuple[<span class="number">0</span>] = [<span class="number">5</span>, <span class="number">6</span>]  <span class="comment"># TypeError!</span>
+<span class="keyword">except</span> TypeError:
+    <span class="keyword">print</span>(<span class="string">"مش ممكن تغير الـ tuple references"</span>)</code></pre>
+                </div>
+            </div>
+
+            <div class="solution-box">
+                <h3 class="text-xl font-semibold mb-3 text-green-700">
+                    <i class="fas fa-check-circle ml-2"></i>
+                    أمثلة عملية
+                </h3>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="comment"># مثال 1: tuple مع objects معقدة</span>
+<span class="keyword">class</span> <span class="function">Person</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>, name):
+        <span class="keyword">self</span>.name = name
+
+person = Person(<span class="string">"أحمد"</span>)
+data = (person, <span class="string">"employee"</span>)
+
+<span class="comment"># تغيير خصائص الـ object</span>
+person.name = <span class="string">"محمد"</span>
+<span class="keyword">print</span>(data[<span class="number">0</span>].name)  <span class="comment"># محمد</span>
+
+<span class="comment"># مثال 2: nested structures</span>
+nested = (
+    [<span class="number">1</span>, <span class="number">2</span>, [<span class="number">3</span>, <span class="number">4</span>]],
+    {<span class="string">"users"</span>: [<span class="string">"علي"</span>, <span class="string">"سارة"</span>]}
+)
+
+<span class="comment"># كل ده هيشتغل!</span>
+nested[<span class="number">0</span>][<span class="number">2</span>].append(<span class="number">5</span>)
+nested[<span class="number">1</span>][<span class="string">"users"</span>].append(<span class="string">"فاطمة"</span>)
+
+<span class="keyword">print</span>(nested)  <span class="comment"># النتيجة متغيرة!</span></code></pre>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h3 class="text-xl font-semibold mb-3 text-yellow-700">
+                    <i class="fas fa-shield-alt ml-2"></i>
+                    إزاي تعمل True Immutability؟
+                </h3>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="keyword">import</span> copy
+
+<span class="comment"># استخدام deep copy</span>
+original_data = [<span class="number">1</span>, <span class="number">2</span>, [<span class="number">3</span>, <span class="number">4</span>]]
+immutable_tuple = copy.deepcopy(original_data)
+
+<span class="comment"># أو استخدام frozen dataclass</span>
+<span class="keyword">from</span> dataclasses <span class="keyword">import</span> dataclass
+
+<span class="keyword">@dataclass(frozen=True)</span>
+<span class="keyword">class</span> <span class="function">ImmutablePoint</span>:
+    x: <span class="keyword">int</span>
+    y: <span class="keyword">int</span>
+
+point = ImmutablePoint(<span class="number">1</span>, <span class="number">2</span>)
+<span class="comment"># point.x = 5  # Error!</span></code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dictionary Gotchas -->
+        <div id="dictionary-gotchas" class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-3xl font-bold mb-6 text-green-600">
+                <i class="fas fa-hashtag ml-3"></i>
+                مشاكل الـ Dictionary والـ Hash
+            </h2>
+            
+            <div class="gotcha-box">
+                <h3 class="text-xl font-semibold mb-3 text-red-700">
+                    <i class="fas fa-bug ml-2"></i>
+                    Hash Collision المفاجئة
+                </h3>
+                <p class="mb-4">
+                    ممكن تحط 4 keys مختلفة في dictionary وتلاقي بس 2 منهم موجودين!
+                </p>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="comment"># مثال مربك</span>
+my_dict = {}
+my_dict[<span class="number">1</span>] = <span class="string">"integer"</span>
+my_dict[<span class="number">1.0</span>] = <span class="string">"float"</span>
+my_dict[<span class="keyword">True</span>] = <span class="string">"boolean"</span>
+my_dict[<span class="number">1</span>+<span class="number">0</span>j] = <span class="string">"complex"</span>
+
+<span class="keyword">print</span>(my_dict)  <span class="comment"># {1: 'complex', True: 'boolean'} 😱</span>
+<span class="keyword">print</span>(<span class="keyword">len</span>(my_dict))  <span class="comment"># 2</span></code></pre>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h3 class="text-xl font-semibold mb-3 text-blue-700">
+                    <i class="fas fa-search ml-2"></i>
+                    السبب وراء المشكلة
+                </h3>
+                <p class="mb-4">
+                    Python بيستخدم hash equality مش object identity. القيم دي كلها لها نفس الـ hash!
+                </p>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="comment"># فهم الـ hash equality</span>
+values = [<span class="number">1</span>, <span class="number">1.0</span>, <span class="keyword">True</span>, <span class="number">1</span>+<span class="number">0</span>j]
+
+<span class="keyword">for</span> val <span class="keyword">in</span> values:
+    <span class="keyword">print</span>(<span class="string">f"Value: {val:>6}, Hash: {hash(val):>10}, Equal to 1: {val == 1}"</span>)
+
+<span class="comment"># النتيجة:</span>
+<span class="comment"># Value:      1, Hash:          1, Equal to 1: True</span>
+<span class="comment"># Value:    1.0, Hash:          1, Equal to 1: True</span>
+<span class="comment"># Value:   True, Hash:          1, Equal to 1: True</span>
+<span class="comment"># Value: (1+0j), Hash:          1, Equal to 1: True</span></code></pre>
+                </div>
+            </div>
+
+            <div class="solution-box">
+                <h3 class="text-xl font-semibold mb-3 text-green-700">
+                    <i class="fas fa-tools ml-2"></i>
+                    حلول وبدائل
+                </h3>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="comment"># الحل 1: استخدام type مع value</span>
+type_aware_dict = {}
+<span class="keyword">for</span> val <span class="keyword">in</span> [<span class="number">1</span>, <span class="number">1.0</span>, <span class="keyword">True</span>]:
+    key = (type(val), val)
+    type_aware_dict[key] = <span class="string">f"Type: {type(val).__name__}, Value: {val}"</span>
+
+<span class="keyword">print</span>(type_aware_dict)
+
+<span class="comment"># الحل 2: استخدام string representation</span>
+str_key_dict = {}
+<span class="keyword">for</span> val <span class="keyword">in</span> [<span class="number">1</span>, <span class="number">1.0</span>, <span class="keyword">True</span>]:
+    key = <span class="string">f"{type(val).__name__}:{val}"</span>
+    str_key_dict[key] = val
+
+<span class="keyword">print</span>(str_key_dict)
+
+<span class="comment"># الحل 3: custom class للـ keys</span>
+<span class="keyword">class</span> <span class="function">TypedKey</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>, value):
+        <span class="keyword">self</span>.value = value
+        <span class="keyword">self</span>.type = type(value)
+    
+    <span class="keyword">def</span> <span class="function">__hash__</span>(<span class="keyword">self</span>):
+        <span class="keyword">return</span> <span class="keyword">hash</span>((<span class="keyword">self</span>.type, <span class="keyword">self</span>.value))
+    
+    <span class="keyword">def</span> <span class="function">__eq__</span>(<span class="keyword">self</span>, other):
+        <span class="keyword">return</span> <span class="keyword">self</span>.type == other.type <span class="keyword">and</span> <span class="keyword">self</span>.value == other.value</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Boolean Context -->
+        <div id="boolean-context" class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-3xl font-bold mb-6 text-purple-600">
+                <i class="fas fa-check-circle ml-3"></i>
+                Boolean Context للكائنات المخصصة
+            </h2>
+            
+            <div class="info-box">
+                <h3 class="text-xl font-semibold mb-3 text-blue-700">
+                    <i class="fas fa-lightbulb ml-2"></i>
+                    إيه هو Boolean Context؟
+                </h3>
+                <p class="mb-4">
+                    لما تستخدم object في if statement أو any() أو bool()، Python بيستدعي methods معينة لتحديد إذا كان truthy أو falsy.
+                </p>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="comment"># Python بيستخدم الـ methods دي بالترتيب:</span>
+<span class="comment"># 1. __bool__() إذا موجود</span>
+<span class="comment"># 2. __len__() إذا موجود (False إذا كان 0)</span>
+<span class="comment"># 3. True افتراضياً</span>
+
+<span class="keyword">class</span> <span class="function">MyClass</span>:
+    <span class="keyword">pass</span>
+
+obj = MyClass()
+<span class="keyword">print</span>(<span class="keyword">bool</span>(obj))  <span class="comment"># True (default)</span>
+
+<span class="keyword">if</span> obj:
+    <span class="keyword">print</span>(<span class="string">"Object is truthy"</span>)</code></pre>
+                </div>
+            </div>
+
+            <div class="solution-box">
+                <h3 class="text-xl font-semibold mb-3 text-green-700">
+                    <i class="fas fa-code ml-2"></i>
+                    تطبيق عملي: Shopping Cart
+                </h3>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="keyword">class</span> <span class="function">ShoppingCart</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>):
+        <span class="keyword">self</span>.items = []
+    
+    <span class="keyword">def</span> <span class="function">add_item</span>(<span class="keyword">self</span>, item):
+        <span class="keyword">self</span>.items.append(item)
+    
+    <span class="keyword">def</span> <span class="function">__bool__</span>(<span class="keyword">self</span>):
+        <span class="comment"># العربة فارغة = False</span>
+        <span class="keyword">return</span> <span class="keyword">len</span>(<span class="keyword">self</span>.items) > <span class="number">0</span>
+    
+    <span class="keyword">def</span> <span class="function">__len__</span>(<span class="keyword">self</span>):
+        <span class="keyword">return</span> <span class="keyword">len</span>(<span class="keyword">self</span>.items)
+
+<span class="comment"># الاستخدام</span>
+cart = ShoppingCart()
+
+<span class="keyword">if</span> cart:
+    <span class="keyword">print</span>(<span class="string">"العربة فيها حاجات"</span>)
+<span class="keyword">else</span>:
+    <span class="keyword">print</span>(<span class="string">"العربة فارغة"</span>)  <span class="comment"># هيطبع ده</span>
+
+cart.add_item(<span class="string">"تفاح"</span>)
+
+<span class="keyword">if</span> cart:
+    <span class="keyword">print</span>(<span class="string">"دلوقتي العربة فيها حاجات"</span>)  <span class="comment"># هيطبع ده</span></code></pre>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h3 class="text-xl font-semibold mb-3 text-yellow-700">
+                    <i class="fas fa-exclamation-triangle ml-2"></i>
+                    __len__ vs __bool__ Priority
+                </h3>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="keyword">class</span> <span class="function">ConfusingClass</span>:
+    <span class="keyword">def</span> <span class="function">__len__</span>(<span class="keyword">self</span>):
+        <span class="keyword">return</span> <span class="number">0</span>  <span class="comment"># يعني False</span>
+    
+    <span class="keyword">def</span> <span class="function">__bool__</span>(<span class="keyword">self</span>):
+        <span class="keyword">return</span> <span class="keyword">True</span>  <span class="comment"># لكن __bool__ له أولوية</span>
+
+obj = ConfusingClass()
+<span class="keyword">print</span>(<span class="keyword">bool</span>(obj))  <span class="comment"># True (__bool__ wins!)</span>
+<span class="keyword">print</span>(<span class="keyword">len</span>(obj))   <span class="comment"># 0</span>
+
+<span class="comment"># لو شيلنا __bool__</span>
+<span class="keyword">class</span> <span class="function">OnlyLenClass</span>:
+    <span class="keyword">def</span> <span class="function">__len__</span>(<span class="keyword">self</span>):
+        <span class="keyword">return</span> <span class="number">0</span>
+
+obj2 = OnlyLenClass()
+<span class="keyword">print</span>(<span class="keyword">bool</span>(obj2))  <span class="comment"># False (uses __len__)</span></code></pre>
+                </div>
+            </div>
+
+            <div class="solution-box">
+                <h3 class="text-xl font-semibold mb-3 text-green-700">
+                    <i class="fas fa-star ml-2"></i>
+                    أمثلة متقدمة
+                </h3>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="comment"># مثال 1: Database Connection</span>
+<span class="keyword">class</span> <span class="function">DatabaseConnection</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>):
+        <span class="keyword">self</span>.connected = <span class="keyword">False</span>
+    
+    <span class="keyword">def</span> <span class="function">connect</span>(<span class="keyword">self</span>):
+        <span class="keyword">self</span>.connected = <span class="keyword">True</span>
+    
+    <span class="keyword">def</span> <span class="function">__bool__</span>(<span class="keyword">self</span>):
+        <span class="keyword">return</span> <span class="keyword">self</span>.connected
+
+db = DatabaseConnection()
+<span class="keyword">if</span> <span class="keyword">not</span> db:
+    <span class="keyword">print</span>(<span class="string">"مش متصل، هتصل دلوقتي"</span>)
+    db.connect()
+
+<span class="comment"># مثال 2: API Response</span>
+<span class="keyword">class</span> <span class="function">APIResponse</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>, status_code, data):
+        <span class="keyword">self</span>.status_code = status_code
+        <span class="keyword">self</span>.data = data
+    
+    <span class="keyword">def</span> <span class="function">__bool__</span>(<span class="keyword">self</span>):
+        <span class="keyword">return</span> <span class="number">200</span> <= <span class="keyword">self</span>.status_code < <span class="number">300</span>
+
+response = APIResponse(<span class="number">404</span>, <span class="keyword">None</span>)
+<span class="keyword">if</span> response:
+    <span class="keyword">print</span>(<span class="string">"نجح الطلب"</span>)
+<span class="keyword">else</span>:
+    <span class="keyword">print</span>(<span class="string">"فشل الطلب"</span>)  <span class="comment"># هيطبع ده</span></code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Function Gotchas -->
+        <div id="function-gotchas" class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-3xl font-bold mb-6 text-orange-600">
+                <i class="fas fa-function ml-3"></i>
+                مشاكل الـ Functions الخفية
+            </h2>
+            
+            <div class="gotcha-box">
+                <h3 class="text-xl font-semibold mb-3 text-red-700">
+                    <i class="fas fa-bug ml-2"></i>
+                    Late Binding في الـ Loops
+                </h3>
+                <p class="mb-4">
+                    مشكلة كلاسيكية بتحير كتير من المطورين!
+                </p>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="comment"># مثال المشكلة</span>
+functions = []
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="keyword">range</span>(<span class="number">3</span>):
+    functions.append(<span class="keyword">lambda</span>: i)
+
+<span class="comment"># توقع: [0, 1, 2]</span>
+<span class="comment"># الواقع:</span>
+<span class="keyword">for</span> f <span class="keyword">in</span> functions:
+    <span class="keyword">print</span>(f())  <span class="comment"># 2, 2, 2 😱</span>
+
+<span class="comment"># ليه؟ لأن الـ lambda بتشاور على نفس الـ variable i</span>
+<span class="comment"># ولما الـ loop تخلص، i بتكون = 2</span></code></pre>
+                </div>
+            </div>
+
+            <div class="solution-box">
+                <h3 class="text-xl font-semibold mb-3 text-green-700">
+                    <i class="fas fa-wrench ml-2"></i>
+                    الحلول
+                </h3>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="comment"># الحل 1: استخدام default parameter</span>
+functions = []
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="keyword">range</span>(<span class="number">3</span>):
+    functions.append(<span class="keyword">lambda</span> x=i: x)
+
+<span class="keyword">for</span> f <span class="keyword">in</span> functions:
+    <span class="keyword">print</span>(f())  <span class="comment"># 0, 1, 2 ✅</span>
+
+<span class="comment"># الحل 2: استخدام closure</span>
+<span class="keyword">def</span> <span class="function">make_func</span>(x):
+    <span class="keyword">return</span> <span class="keyword">lambda</span>: x
+
+functions = [make_func(i) <span class="keyword">for</span> i <span class="keyword">in</span> <span class="keyword">range</span>(<span class="number">3</span>)]
+
+<span class="comment"># الحل 3: استخدام partial</span>
+<span class="keyword">from</span> functools <span class="keyword">import</span> partial
+
+<span class="keyword">def</span> <span class="function">identity</span>(x):
+    <span class="keyword">return</span> x
+
+functions = [partial(identity, i) <span class="keyword">for</span> i <span class="keyword">in</span> <span class="keyword">range</span>(<span class="number">3</span>)]</code></pre>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h3 class="text-xl font-semibent mb-3 text-yellow-700">
+                    <i class="fas fa-exclamation-triangle ml-2"></i>
+                    Function Attributes
+                </h3>
+                <p class="mb-4">
+                    كتير من الناس مش عارفين إن الـ functions في Python هي objects وليها attributes!
+                </p>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="comment"># Functions كـ objects</span>
+<span class="keyword">def</span> <span class="function">my_func</span>():
+    <span class="string">"""دالة تجريبية"""</span>
+    <span class="keyword">return</span> <span class="string">"Hello"</span>
+
+<span class="comment"># إضافة attributes للـ function</span>
+my_func.counter = <span class="number">0</span>
+my_func.description = <span class="string">"دالة مخصصة"</span>
+
+<span class="comment"># دالة مع counter</span>
+<span class="keyword">def</span> <span class="function">counting_func</span>():
+    counting_func.calls += <span class="number">1</span>
+    <span class="keyword">return</span> <span class="string">f"تم استدعاؤها {counting_func.calls} مرة"</span>
+
+counting_func.calls = <span class="number">0</span>
+
+<span class="keyword">print</span>(counting_func())  <span class="comment"># تم استدعاؤها 1 مرة</span>
+<span class="keyword">print</span>(counting_func())  <span class="comment"># تم استدعاؤها 2 مرة</span>
+
+<span class="comment"># معلومات الـ function</span>
+<span class="keyword">print</span>(my_func.__name__)     <span class="comment"># my_func</span>
+<span class="keyword">print</span>(my_func.__doc__)      <span class="comment"># دالة تجريبية</span>
+<span class="keyword">print</span>(my_func.__module__)   <span class="comment"># __main__</span></code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- OOP Encapsulation -->
+        <div id="oop-encapsulation" class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-3xl font-bold mb-6 text-indigo-600">
+                <i class="fas fa-shield-alt ml-3"></i>
+                حقيقة الـ OOP والـ Encapsulation في Python
+            </h2>
+            
+            <div class="gotcha-box">
+                <h3 class="text-xl font-semibold mb-3 text-red-700">
+                    <i class="fas fa-unlock ml-2"></i>
+                    Python مافيهوش True Encapsulation
+                </h3>
+                <p class="mb-4">
+                    كتير من الناس بيفتكروا إن الـ underscore بيخفي الـ attributes. في الحقيقة، ده مجرد convention!
+                </p>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="keyword">class</span> <span class="function">BankAccount</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>, balance):
+        <span class="keyword">self</span>._balance = balance      <span class="comment"># "protected"</span>
+        <span class="keyword">self</span>.__secret = <span class="string">"سري"</span>       <span class="comment"># "private"</span>
+    
+    <span class="keyword">def</span> <span class="function">get_balance</span>(<span class="keyword">self</span>):
+        <span class="keyword">return</span> <span class="keyword">self</span>._balance
+
+account = BankAccount(<span class="number">1000</span>)
+
+<span class="comment"># كله accessible!</span>
+<span class="keyword">print</span>(account._balance)           <span class="comment"># 1000</span>
+<span class="keyword">print</span>(account._BankAccount__secret)  <span class="comment"># سري</span>
+
+<span class="comment"># يا ترى الـ __secret فين؟</span>
+<span class="keyword">print</span>(<span class="keyword">dir</span>(account))  <span class="comment"># هتلاقي _BankAccount__secret</span></code></pre>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h3 class="text-xl font-semibold mb-3 text-blue-700">
+                    <i class="fas fa-info-circle ml-2"></i>
+                    Name Mangling الحقيقي
+                </h3>
+                <p class="mb-4">
+                    الـ double underscore مش بيخفي الـ attribute، بس بيغير اسمه (name mangling).
+                </p>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="keyword">class</span> <span class="function">Parent</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>):
+        <span class="keyword">self</span>.public = <span class="string">"عام"</span>
+        <span class="keyword">self</span>._protected = <span class="string">"محمي"</span>
+        <span class="keyword">self</span>.__private = <span class="string">"خاص"</span>
+    
+    <span class="keyword">def</span> <span class="function">show_all</span>(<span class="keyword">self</span>):
+        <span class="keyword">print</span>(<span class="string">f"Public: {self.public}"</span>)
+        <span class="keyword">print</span>(<span class="string">f"Protected: {self._protected}"</span>)
+        <span class="keyword">print</span>(<span class="string">f"Private: {self.__private}"</span>)
+
+<span class="keyword">class</span> <span class="function">Child</span>(Parent):
+    <span class="keyword">def</span> <span class="function">access_parent</span>(<span class="keyword">self</span>):
+        <span class="keyword">print</span>(<span class="keyword">self</span>.public)      <span class="comment"># يشتغل</span>
+        <span class="keyword">print</span>(<span class="keyword">self</span>._protected)  <span class="comment"># يشتغل</span>
+        <span class="comment"># print(self.__private)  # AttributeError!</span>
+        <span class="keyword">print</span>(<span class="keyword">self</span>._Parent__private)  <span class="comment"># يشتغل!</span>
+
+child = Child()
+child.access_parent()
+
+<span class="comment"># شوف كل الـ attributes</span>
+<span class="keyword">print</span>([attr <span class="keyword">for</span> attr <span class="keyword">in</span> <span class="keyword">dir</span>(child) <span class="keyword">if</span> <span class="keyword">not</span> attr.startswith(<span class="string">'__'</span>)])</code></pre>
+                </div>
+            </div>
+
+            <div class="solution-box">
+                <h3 class="text-xl font-semibold mb-3 text-green-700">
+                    <i class="fas fa-shield-alt ml-2"></i>
+                    بدائل للـ True Encapsulation
+                </h3>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="comment"># الحل 1: استخدام Properties</span>
+<span class="keyword">class</span> <span class="function">Temperature</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>, celsius):
+        <span class="keyword">self</span>._celsius = celsius
+    
+    <span class="keyword">@property</span>
+    <span class="keyword">def</span> <span class="function">celsius</span>(<span class="keyword">self</span>):
+        <span class="keyword">return</span> <span class="keyword">self</span>._celsius
+    
+    <span class="keyword">@celsius.setter</span>
+    <span class="keyword">def</span> <span class="function">celsius</span>(<span class="keyword">self</span>, value):
+        <span class="keyword">if</span> value < -<span class="number">273.15</span>:
+            <span class="keyword">raise</span> ValueError(<span class="string">"درجة الحرارة مش ممكن تكون أقل من الصفر المطلق"</span>)
+        <span class="keyword">self</span>._celsius = value
+    
+    <span class="keyword">@property</span>
+    <span class="keyword">def</span> <span class="function">fahrenheit</span>(<span class="keyword">self</span>):
+        <span class="keyword">return</span> <span class="keyword">self</span>._celsius * <span class="number">9/5</span> + <span class="number">32</span>
+
+temp = Temperature(<span class="number">25</span>)
+<span class="keyword">print</span>(temp.celsius)     <span class="comment"># 25</span>
+<span class="keyword">print</span>(temp.fahrenheit)  <span class="comment"># 77.0</span>
+
+<span class="comment"># temp.celsius = -300  # ValueError!</span>
+
+<span class="comment"># الحل 2: استخدام __slots__</span>
+<span class="keyword">class</span> <span class="function">RestrictedClass</span>:
+    __slots__ = [<span class="string">'allowed_attr'</span>]
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>, value):
+        <span class="keyword">self</span>.allowed_attr = value
+
+obj = RestrictedClass(<span class="string">"قيمة"</span>)
+<span class="comment"># obj.new_attr = "جديد"  # AttributeError!</span></code></pre>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h3 class="text-xl font-semibold mb-3 text-yellow-700">
+                    <i class="fas fa-lightbulb ml-2"></i>
+                    أفضل الممارسات في Python
+                </h3>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="comment"># نصائح للـ encapsulation في Python</span>
+
+<span class="comment"># 1. استخدم single underscore للـ "internal use"</span>
+<span class="keyword">class</span> <span class="function">GoodClass</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>):
+        <span class="keyword">self</span>.public_attr = <span class="string">"للجميع"</span>
+        <span class="keyword">self</span>._internal_attr = <span class="string">"للمطورين"</span>
+        <span class="keyword">self</span>.__avoid_conflicts = <span class="string">"لتجنب name conflicts"</span>
+
+<span class="comment"># 2. استخدم properties للـ validation</span>
+<span class="keyword">class</span> <span class="function">Person</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>, age):
+        <span class="keyword">self</span>.age = age  <span class="comment"># هيستخدم الـ setter</span>
+    
+    <span class="keyword">@property</span>
+    <span class="keyword">def</span> <span class="function">age</span>(<span class="keyword">self</span>):
+        <span class="keyword">return</span> <span class="keyword">self</span>._age
+    
+    <span class="keyword">@age.setter</span>
+    <span class="keyword">def</span> <span class="function">age</span>(<span class="keyword">self</span>, value):
+        <span class="keyword">if</span> value < <span class="number">0</span>:
+            <span class="keyword">raise</span> ValueError(<span class="string">"العمر مش ممكن يكون سالب"</span>)
+        <span class="keyword">self</span>._age = value
+
+<span class="comment"># 3. استخدم dataclasses للـ simple data containers</span>
+<span class="keyword">from</span> dataclasses <span class="keyword">import</span> dataclass
+
+<span class="keyword">@dataclass</span>
+<span class="keyword">class</span> <span class="function">Point</span>:
+    x: <span class="keyword">float</span>
+    y: <span class="keyword">float</span>
+    
+    <span class="keyword">def</span> <span class="function">distance_from_origin</span>(<span class="keyword">self</span>):
+        <span class="keyword">return</span> (self.x**<span class="number">2</span> + self.y**<span class="number">2</span>)**<span class="number">0.5</span></code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Integer Caching -->
+        <div id="integer-caching" class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-3xl font-bold mb-6 text-teal-600">
+                <i class="fas fa-memory ml-3"></i>
+                Integer Caching: السر المخفي في Python
+            </h2>
+            
+            <div class="gotcha-box">
+                <h3 class="text-xl font-semibold mb-3 text-red-700">
+                    <i class="fas fa-question-circle ml-2"></i>
+                    ليه 256 is 256 لكن 257 is not 257؟
+                </h3>
+                <p class="mb-4">
+                    مثال يحير كتير من المطورين!
+                </p>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="comment"># مثال محير</span>
+a = <span class="number">256</span>
+b = <span class="number">256</span>
+<span class="keyword">print</span>(a <span class="keyword">is</span> b)  <span class="comment"># True</span>
+
+c = <span class="number">257</span>
+d = <span class="number">257</span>
+<span class="keyword">print</span>(c <span class="keyword">is</span> d)  <span class="comment"># False 😱</span>
+
+<span class="comment"># ليه؟</span>
+<span class="keyword">print</span>(<span class="keyword">id</span>(a), <span class="keyword">id</span>(b))  <span class="comment"># نفس الـ ID</span>
+<span class="keyword">print</span>(<span class="keyword">id</span>(c), <span class="keyword">id</span>(d))  <span class="comment"># IDs مختلفة</span></code></pre>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h3 class="text-xl font-semibold mb-3 text-blue-700">
+                    <i class="fas fa-database ml-2"></i>
+                    فهم Integer Caching
+                </h3>
+                <p class="mb-4">
+                    Python بيحتفظ بـ cache للأرقام من -5 إلى 256 في الذاكرة لتوفير الوقت والمساحة.
+                </p>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="comment"># اختبار الـ cache range</span>
+<span class="keyword">def</span> <span class="function">test_integer_cache</span>():
+    <span class="keyword">print</span>(<span class="string">"Testing integer cache..."</span>)
+    
+    <span class="comment"># أرقام في الـ cache</span>
+    <span class="keyword">for</span> i <span class="keyword">in</span> [-<span class="number">5</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">100</span>, <span class="number">256</span>]:
+        a = i
+        b = i
+        <span class="keyword">print</span>(<span class="string">f"{i}: {a is b} (ID: {id(a)})"</span>)
+    
+    <span class="comment"># أرقام خارج الـ cache</span>
+    <span class="keyword">for</span> i <span class="keyword">in</span> [-<span class="number">6</span>, <span class="number">257</span>, <span class="number">1000</span>]:
+        a = i
+        b = i
+        <span class="keyword">print</span>(<span class="string">f"{i}: {a is b} (ID: {id(a)}, {id(b)})"</span>)
+
+test_integer_cache()
+
+<span class="comment"># مثال عملي على التأثير</span>
+<span class="keyword">def</span> <span class="function">compare_integers</span>(x, y):
+    <span class="keyword">if</span> x <span class="keyword">is</span> y:
+        <span class="keyword">return</span> <span class="string">"Same object"</span>
+    <span class="keyword">elif</span> x == y:
+        <span class="keyword">return</span> <span class="string">"Same value, different objects"</span>
+    <span class="keyword">else</span>:
+        <span class="keyword">return</span> <span class="string">"Different values"</span>
+
+<span class="keyword">print</span>(compare_integers(<span class="number">100</span>, <span class="number">100</span>))  <span class="comment"># Same object</span>
+<span class="keyword">print</span>(compare_integers(<span class="number">300</span>, <span class="number">300</span>))  <span class="comment"># Same value, different objects</span></code></pre>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h3 class="text-xl font-semibold mb-3 text-yellow-700">
+                    <i class="fas fa-exclamation-triangle ml-2"></i>
+                    مشاكل محتملة
+                </h3>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="comment"># مشكلة محتملة في الكود</span>
+<span class="keyword">def</span> <span class="function">bad_comparison</span>(numbers):
+    <span class="comment"># مش كويس - بيعتمد على object identity</span>
+    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="keyword">range</span>(<span class="keyword">len</span>(numbers)):
+        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="keyword">range</span>(i + <span class="number">1</span>, <span class="keyword">len</span>(numbers)):
+            <span class="keyword">if</span> numbers[i] <span class="keyword">is</span> numbers[j]:  <span class="comment"># خطأ!</span>
+                <span class="keyword">print</span>(<span class="string">f"Found duplicate: {numbers[i]}"</span>)
+
+<span class="comment"># هيشتغل مع الأرقام الصغيرة</span>
+bad_comparison([<span class="number">1</span>, <span class="number">2</span>, <span class="number">1</span>])  <span class="comment"># Found duplicate: 1</span>
+
+<span class="comment"># مش هيشتغل مع الأرقام الكبيرة</span>
+bad_comparison([<span class="number">300</span>, <span class="number">400</span>, <span class="number">300</span>])  <span class="comment"># مش هيطبع حاجة!</span>
+
+<span class="comment"># الطريقة الصحيحة</span>
+<span class="keyword">def</span> <span class="function">good_comparison</span>(numbers):
+    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="keyword">range</span>(<span class="keyword">len</span>(numbers)):
+        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="keyword">range</span>(i + <span class="number">1</span>, <span class="keyword">len</span>(numbers)):
+            <span class="keyword">if</span> numbers[i] == numbers[j]:  <span class="comment"># صحيح</span>
+                <span class="keyword">print</span>(<span class="string">f"Found duplicate: {numbers[i]}"</span>)</code></pre>
+                </div>
+            </div>
+
+            <div class="solution-box">
+                <h3 class="text-xl font-semibold mb-3 text-green-700">
+                    <i class="fas fa-lightbulb ml-2"></i>
+                    أفضل الممارسات
+                </h3>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="comment"># نصائح للتعامل مع الأرقام</span>
+
+<span class="comment"># 1. استخدم == للـ value comparison</span>
+<span class="keyword">def</span> <span class="function">safe_number_check</span>(a, b):
+    <span class="keyword">return</span> a == b  <span class="comment"># مش a is b</span>
+
+<span class="comment"># 2. استخدم is بس مع None, True, False</span>
+<span class="keyword">def</span> <span class="function">check_none</span>(value):
+    <span class="keyword">return</span> value <span class="keyword">is</span> None  <span class="comment"># صحيح</span>
+
+<span class="comment"># 3. فهم الفرق بين identity و equality</span>
+<span class="keyword">def</span> <span class="function">explain_difference</span>():
+    a = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]
+    b = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]
+    c = a
+    
+    <span class="keyword">print</span>(<span class="string">f"a == b: {a == b}"</span>)    <span class="comment"># True (same values)</span>
+    <span class="keyword">print</span>(<span class="string">f"a is b: {a is b}"</span>)    <span class="comment"># False (different objects)</span>
+    <span class="keyword">print</span>(<span class="string">f"a is c: {a is c}"</span>)    <span class="comment"># True (same object)</span>
+
+explain_difference()
+
+<span class="comment"># 4. تجنب الاعتماد على integer caching</span>
+<span class="keyword">def</span> <span class="function">robust_function</span>(numbers):
+    <span class="comment"># بدلاً من الاعتماد على caching</span>
+    unique_numbers = <span class="keyword">set</span>(numbers)
+    <span class="keyword">return</span> <span class="keyword">len</span>(unique_numbers) == <span class="keyword">len</span>(numbers)</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loop Gotchas -->
+        <div id="loop-gotchas" class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-3xl font-bold mb-6 text-pink-600">
+                <i class="fas fa-sync ml-3"></i>
+                مشاكل الـ For Loops المخفية
+            </h2>
+            
+            <div class="gotcha-box">
+                <h3 class="text-xl font-semibold mb-3 text-red-700">
+                    <i class="fas fa-bug ml-2"></i>
+                    تعديل List أثناء الـ Loop
+                </h3>
+                <p class="mb-4">
+                    مشكلة شائعة بتؤدي لسلوك غير متوقع!
+                </p>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="comment"># مثال المشكلة</span>
+numbers = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>]
+<span class="keyword">for</span> i, num <span class="keyword">in</span> <span class="keyword">enumerate</span>(numbers):
+    <span class="keyword">if</span> num % <span class="number">2</span> == <span class="number">0</span>:
+        numbers.remove(num)  <span class="comment"># مشكلة!</span>
+
+<span class="keyword">print</span>(numbers)  <span class="comment"># [1, 3, 5] - فين الـ 4؟</span>
+
+<span class="comment"># مثال أوضح</span>
+items = [<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>, <span class="string">'d'</span>]
+<span class="keyword">for</span> item <span class="keyword">in</span> items:
+    <span class="keyword">print</span>(<span class="string">f"Processing: {item}"</span>)
+    <span class="keyword">if</span> item == <span class="string">'b'</span>:
+        items.remove(item)
+    <span class="keyword">print</span>(<span class="string">f"List now: {items}"</span>)
+
+<span class="comment"># هيطبع:</span>
+<span class="comment"># Processing: a</span>
+<span class="comment"># List now: ['a', 'b', 'c', 'd']</span>
+<span class="comment"># Processing: b</span>
+<span class="comment"># List now: ['a', 'c', 'd']</span>
+<span class="comment"># Processing: d  (فين الـ c؟)</span>
+<span class="comment"># List now: ['a', 'c', 'd']</span></code></pre>
+                </div>
+            </div>
+
+            <div class="solution-box">
+                <h3 class="text-xl font-semibold mb-3 text-green-700">
+                    <i class="fas fa-tools ml-2"></i>
+                    الحلول الصحيحة
+                </h3>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="comment"># الحل 1: استخدام copy للـ loop</span>
+numbers = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>]
+<span class="keyword">for</span> num <span class="keyword">in</span> numbers.copy():  <span class="comment"># Loop على copy</span>
+    <span class="keyword">if</span> num % <span class="number">2</span> == <span class="number">0</span>:
+        numbers.remove(num)
+
+<span class="keyword">print</span>(numbers)  <span class="comment"># [1, 3, 5] ✅</span>
+
+<span class="comment"># الحل 2: استخدام list comprehension</span>
+numbers = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>]
+numbers = [num <span class="keyword">for</span> num <span class="keyword">in</span> numbers <span class="keyword">if</span> num % <span class="number">2</span> != <span class="number">0</span>]
+<span class="keyword">print</span>(numbers)  <span class="comment"># [1, 3, 5] ✅</span>
+
+<span class="comment"># الحل 3: استخدام filter</span>
+numbers = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>]
+numbers = <span class="keyword">list</span>(<span class="keyword">filter</span>(<span class="keyword">lambda</span> x: x % <span class="number">2</span> != <span class="number">0</span>, numbers))
+<span class="keyword">print</span>(numbers)  <span class="comment"># [1, 3, 5] ✅</span>
+
+<span class="comment"># الحل 4: Loop عكسي</span>
+numbers = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>]
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="keyword">reversed</span>(<span class="keyword">range</span>(<span class="keyword">len</span>(numbers))):
+    <span class="keyword">if</span> numbers[i] % <span class="number">2</span> == <span class="number">0</span>:
+        <span class="keyword">del</span> numbers[i]
+
+<span class="keyword">print</span>(numbers)  <span class="comment"># [1, 3, 5] ✅</span></code></pre>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h3 class="text-xl font-semibold mb-3 text-yellow-700">
+                    <i class="fas fa-exclamation-triangle ml-2"></i>
+                    مشاكل أخرى في الـ Loops
+                </h3>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="comment"># مشكلة 1: متغير الـ loop يستمر بعد الـ loop</span>
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="keyword">range</span>(<span class="number">3</span>):
+    <span class="keyword">pass</span>
+
+<span class="keyword">print</span>(i)  <span class="comment"># 2 (آخر قيمة)</span>
+
+<span class="comment"># مشكلة 2: dictionary size changes during iteration</span>
+data = {<span class="string">'a'</span>: <span class="number">1</span>, <span class="string">'b'</span>: <span class="number">2</span>, <span class="string">'c'</span>: <span class="number">3</span>}
+<span class="keyword">for</span> key <span class="keyword">in</span> data:
+    <span class="keyword">if</span> key == <span class="string">'b'</span>:
+        <span class="keyword">del</span> data[key]  <span class="comment"># RuntimeError!</span>
+
+<span class="comment"># الحل: استخدام copy أو list</span>
+data = {<span class="string">'a'</span>: <span class="number">1</span>, <span class="string">'b'</span>: <span class="number">2</span>, <span class="string">'c'</span>: <span class="number">3</span>}
+<span class="keyword">for</span> key <span class="keyword">in</span> <span class="keyword">list</span>(data.keys()):
+    <span class="keyword">if</span> key == <span class="string">'b'</span>:
+        <span class="keyword">del</span> data[key]
+
+<span class="comment"># مشكلة 3: nested loops مع نفس الـ variable</span>
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="keyword">range</span>(<span class="number">3</span>):
+    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="keyword">range</span>(<span class="number">2</span>):  <span class="comment"># بيكتب على نفس الـ i</span>
+        <span class="keyword">print</span>(<span class="string">f"Inner: {i}"</span>)
+    <span class="keyword">print</span>(<span class="string">f"Outer: {i}"</span>)  <span class="comment"># هيطبع قيمة inner loop!</span></code></pre>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h3 class="text-xl font-semibold mb-3 text-blue-700">
+                    <i class="fas fa-rocket ml-2"></i>
+                    تحسينات الـ Loops
+                </h3>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="comment"># تحسين 1: استخدام enumerate بدلاً من range(len())</span>
+items = [<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>]
+
+<span class="comment"># مش كويس</span>
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="keyword">range</span>(<span class="keyword">len</span>(items)):
+    <span class="keyword">print</span>(<span class="string">f"{i}: {items[i]}"</span>)
+
+<span class="comment"># أحسن</span>
+<span class="keyword">for</span> i, item <span class="keyword">in</span> <span class="keyword">enumerate</span>(items):
+    <span class="keyword">print</span>(<span class="string">f"{i}: {item}"</span>)
+
+<span class="comment"># تحسين 2: استخدام zip للـ parallel iteration</span>
+names = [<span class="string">'أحمد'</span>, <span class="string">'فاطمة'</span>, <span class="string">'علي'</span>]
+ages = [<span class="number">25</span>, <span class="number">30</span>, <span class="number">35</span>]
+
+<span class="comment"># مش كويس</span>
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="keyword">range</span>(<span class="keyword">len</span>(names)):
+    <span class="keyword">print</span>(<span class="string">f"{names[i]} عمره {ages[i]}"</span>)
+
+<span class="comment"># أحسن</span>
+<span class="keyword">for</span> name, age <span class="keyword">in</span> <span class="keyword">zip</span>(names, ages):
+    <span class="keyword">print</span>(<span class="string">f"{name} عمره {age}"</span>)
+
+<span class="comment"># تحسين 3: استخدام itertools للـ advanced patterns</span>
+<span class="keyword">from</span> itertools <span class="keyword">import</span> chain, cycle, islice
+
+<span class="comment"># دمج lists متعددة</span>
+list1 = [<span class="number">1</span>, <span class="number">2</span>]
+list2 = [<span class="number">3</span>, <span class="number">4</span>]
+<span class="keyword">for</span> item <span class="keyword">in</span> chain(list1, list2):
+    <span class="keyword">print</span>(item)
+
+<span class="comment"># تكرار لانهائي</span>
+colors = [<span class="string">'أحمر'</span>, <span class="string">'أخضر'</span>, <span class="string">'أزرق'</span>]
+<span class="keyword">for</span> color <span class="keyword">in</span> islice(cycle(colors), <span class="number">7</span>):
+    <span class="keyword">print</span>(color)</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Advanced Features -->
+        <div id="advanced-features" class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-3xl font-bold mb-6 text-yellow-600">
+                <i class="fas fa-star ml-3"></i>
+                ميزات متقدمة في Python
+            </h2>
+            
+            <div class="solution-box">
+                <h3 class="text-xl font-semibold mb-3 text-green-700">
+                    <i class="fas fa-magic ml-2"></i>
+                    F-strings المتقدمة
+                </h3>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="comment"># ميزات متقدمة في f-strings</span>
+name = <span class="string">"أحمد"</span>
+score = <span class="number">95.6789</span>
+data = {<span class="string">'subject'</span>: <span class="string">'رياضيات'</span>, <span class="string">'grade'</span>: <span class="string">'A'</span>}
+
+<span class="comment"># تنسيق الأرقام</span>
+<span class="keyword">print</span>(<span class="string">f"الدرجة: {score:.2f}"</span>)  <span class="comment"># 95.68</span>
+<span class="keyword">print</span>(<span class="string">f"الدرجة: {score:>10.2f}"</span>)  <span class="comment"># right-aligned</span>
+<span class="keyword">print</span>(<span class="string">f"الدرجة: {score:0>10.2f}"</span>)  <span class="comment"># padded with zeros</span>
+
+<span class="comment"># تنسيق التاريخ</span>
+<span class="keyword">from</span> datetime <span class="keyword">import</span> datetime
+now = datetime.now()
+<span class="keyword">print</span>(<span class="string">f"التاريخ: {now:%Y-%m-%d %H:%M:%S}"</span>)
+
+<span class="comment"># استخدام expressions معقدة</span>
+numbers = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>]
+<span class="keyword">print</span>(<span class="string">f"المجموع: {sum(numbers)}"</span>)
+<span class="keyword">print</span>(<span class="string">f"المربعات: {[x**2 for x in numbers]}"</span>)
+
+<span class="comment"># استخدام dictionary</span>
+<span class="keyword">print</span>(<span class="string">f"المادة: {data['subject']}"</span>)
+
+<span class="comment"># Debug mode (Python 3.8+)</span>
+x = <span class="number">10</span>
+y = <span class="number">20</span>
+<span class="keyword">print</span>(<span class="string">f"{x=}, {y=}, {x+y=}"</span>)  <span class="comment"># x=10, y=20, x+y=30</span></code></pre>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h3 class="text-xl font-semibold mb-3 text-blue-700">
+                    <i class="fas fa-layer-group ml-2"></i>
+                    Context Managers المخصصة
+                </h3>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="comment"># إنشاء context manager مخصص</span>
+<span class="keyword">class</span> <span class="function">Timer</span>:
+    <span class="keyword">def</span> <span class="function">__enter__</span>(<span class="keyword">self</span>):
+        <span class="keyword">import</span> time
+        <span class="keyword">self</span>.start = time.time()
+        <span class="keyword">return</span> <span class="keyword">self</span>
+    
+    <span class="keyword">def</span> <span class="function">__exit__</span>(<span class="keyword">self</span>, exc_type, exc_val, exc_tb):
+        <span class="keyword">import</span> time
+        <span class="keyword">self</span>.end = time.time()
+        <span class="keyword">self</span>.duration = <span class="keyword">self</span>.end - <span class="keyword">self</span>.start
+        <span class="keyword">print</span>(<span class="string">f"الوقت المستغرق: {self.duration:.4f} ثانية"</span>)
+
+<span class="comment"># الاستخدام</span>
+<span class="keyword">with</span> Timer():
+    <span class="comment"># عملية تستغرق وقت</span>
+    <span class="keyword">sum</span>(<span class="keyword">range</span>(<span class="number">1000000</span>))
+
+<span class="comment"># استخدام contextlib</span>
+<span class="keyword">from</span> contextlib <span class="keyword">import</span> contextmanager
+
+<span class="keyword">@contextmanager</span>
+<span class="keyword">def</span> <span class="function">database_transaction</span>():
+    <span class="keyword">print</span>(<span class="string">"بدء المعاملة"</span>)
+    <span class="keyword">try</span>:
+        <span class="keyword">yield</span> <span class="string">"database_connection"</span>
+    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:
+        <span class="keyword">print</span>(<span class="string">f"خطأ: {e}"</span>)
+        <span class="keyword">print</span>(<span class="string">"تراجع عن المعاملة"</span>)
+        <span class="keyword">raise</span>
+    <span class="keyword">else</span>:
+        <span class="keyword">print</span>(<span class="string">"تأكيد المعاملة"</span>)
+    <span class="keyword">finally</span>:
+        <span class="keyword">print</span>(<span class="string">"إغلاق الاتصال"</span>)
+
+<span class="keyword">with</span> database_transaction() <span class="keyword">as</span> db:
+    <span class="keyword">print</span>(<span class="string">"تنفيذ استعلام"</span>)</code></pre>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h3 class="text-xl font-semibold mb-3 text-yellow-700">
+                    <i class="fas fa-cog ml-2"></i>
+                    Decorators المتقدمة
+                </h3>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="comment"># decorator مع parameters</span>
+<span class="keyword">def</span> <span class="function">retry</span>(max_attempts=<span class="number">3</span>):
+    <span class="keyword">def</span> <span class="function">decorator</span>(func):
+        <span class="keyword">def</span> <span class="function">wrapper</span>(*args, **kwargs):
+            <span class="keyword">for</span> attempt <span class="keyword">in</span> <span class="keyword">range</span>(max_attempts):
+                <span class="keyword">try</span>:
+                    <span class="keyword">return</span> func(*args, **kwargs)
+                <span class="keyword">except</span> Exception <span class="keyword">as</span> e:
+                    <span class="keyword">if</span> attempt == max_attempts - <span class="number">1</span>:
+                        <span class="keyword">raise</span>
+                    <span class="keyword">print</span>(<span class="string">f"المحاولة {attempt + 1} فشلت: {e}"</span>)
+            <span class="keyword">return</span> wrapper
+        <span class="keyword">return</span> decorator
+
+<span class="keyword">@retry(max_attempts=3)</span>
+<span class="keyword">def</span> <span class="function">unreliable_function</span>():
+    <span class="keyword">import</span> random
+    <span class="keyword">if</span> random.random() < <span class="number">0.7</span>:
+        <span class="keyword">raise</span> Exception(<span class="string">"فشل عشوائي"</span>)
+    <span class="keyword">return</span> <span class="string">"نجح!"</span>
+
+<span class="comment"># class-based decorator</span>
+<span class="keyword">class</span> <span class="function">CountCalls</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>, func):
+        <span class="keyword">self</span>.func = func
+        <span class="keyword">self</span>.count = <span class="number">0</span>
+    
+    <span class="keyword">def</span> <span class="function">__call__</span>(<span class="keyword">self</span>, *args, **kwargs):
+        <span class="keyword">self</span>.count += <span class="number">1</span>
+        <span class="keyword">print</span>(<span class="string">f"تم استدعاء {self.func.__name__} {self.count} مرة"</span>)
+        <span class="keyword">return</span> <span class="keyword">self</span>.func(*args, **kwargs)
+
+<span class="keyword">@CountCalls</span>
+<span class="keyword">def</span> <span class="function">greet</span>(name):
+    <span class="keyword">return</span> <span class="string">f"أهلاً {name}"</span>
+
+<span class="keyword">print</span>(greet(<span class="string">"أحمد"</span>))
+<span class="keyword">print</span>(greet(<span class="string">"فاطمة"</span>))</code></pre>
+                </div>
+            </div>
+
+            <div class="solution-box">
+                <h3 class="text-xl font-semibold mb-3 text-green-700">
+                    <i class="fas fa-database ml-2"></i>
+                    Generators المتقدمة
+                </h3>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="comment"># generator مع send() و throw()</span>
+<span class="keyword">def</span> <span class="function">advanced_generator</span>():
+    <span class="keyword">try</span>:
+        value = <span class="number">0</span>
+        <span class="keyword">while</span> <span class="keyword">True</span>:
+            received = <span class="keyword">yield</span> value
+            <span class="keyword">if</span> received <span class="keyword">is</span> <span class="keyword">not</span> None:
+                value = received
+            <span class="keyword">else</span>:
+                value += <span class="number">1</span>
+    <span class="keyword">except</span> ValueError:
+        <span class="keyword">yield</span> <span class="string">"تم إيقاف الـ generator"</span>
+
+gen = advanced_generator()
+<span class="keyword">print</span>(<span class="keyword">next</span>(gen))        <span class="comment"># 0</span>
+<span class="keyword">print</span>(<span class="keyword">next</span>(gen))        <span class="comment"># 1</span>
+<span class="keyword">print</span>(gen.send(<span class="number">10</span>))     <span class="comment"># 10</span>
+<span class="keyword">print</span>(<span class="keyword">next</span>(gen))        <span class="comment"># 11</span>
+<span class="keyword">print</span>(gen.throw(ValueError))  <span class="comment"># تم إيقاف الـ generator</span>
+
+<span class="comment"># generator للـ infinite sequences</span>
+<span class="keyword">def</span> <span class="function">fibonacci</span>():
+    a, b = <span class="number">0</span>, <span class="number">1</span>
+    <span class="keyword">while</span> <span class="keyword">True</span>:
+        <span class="keyword">yield</span> a
+        a, b = b, a + b
+
+<span class="comment"># استخدام مع itertools</span>
+<span class="keyword">from</span> itertools <span class="keyword">import</span> islice
+fib = fibonacci()
+<span class="keyword">print</span>(<span class="keyword">list</span>(islice(fib, <span class="number">10</span>)))  <span class="comment"># أول 10 أرقام فيبوناتشي</span>
+
+<span class="comment"># generator expression للـ memory efficiency</span>
+<span class="comment"># بدلاً من</span>
+squares = [x**<span class="number">2</span> <span class="keyword">for</span> x <span class="keyword">in</span> <span class="keyword">range</span>(<span class="number">1000000</span>)]  <span class="comment"># استهلاك ذاكرة عالي</span>
+
+<span class="comment"># استخدم</span>
+squares = (x**<span class="number">2</span> <span class="keyword">for</span> x <span class="keyword">in</span> <span class="keyword">range</span>(<span class="number">1000000</span>))  <span class="comment"># استهلاك ذاكرة قليل</span>
+<span class="keyword">print</span>(<span class="keyword">sum</span>(squares))  <span class="comment"># يعمل بكفاءة</span></code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Best Practices -->
+        <div id="best-practices" class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-3xl font-bold mb-6 text-emerald-600">
+                <i class="fas fa-thumbs-up ml-3"></i>
+                أفضل الممارسات وملخص المبادئ
+            </h2>
+            
+            <div class="solution-box">
+                <h3 class="text-xl font-semibold mb-3 text-green-700">
+                    <i class="fas fa-check-circle ml-2"></i>
+                    القواعد الذهبية
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-green-800 mb-2">✅ افعل</h4>
+                        <ul class="text-sm text-green-700 space-y-1">
+                            <li>• استخدم <code>None</code> للـ default parameters</li>
+                            <li>• استخدم <code>==</code> للـ value comparison</li>
+                            <li>• استخدم <code>is</code> مع <code>None</code> فقط</li>
+                            <li>• استخدم list comprehensions</li>
+                            <li>• استخدم <code>enumerate</code> و <code>zip</code></li>
+                            <li>• استخدم context managers</li>
+                            <li>• استخدم generators للـ memory efficiency</li>
+                        </ul>
+                    </div>
+                    <div class="bg-red-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-red-800 mb-2">❌ تجنب</h4>
+                        <ul class="text-sm text-red-700 space-y-1">
+                            <li>• مutable default parameters</li>
+                            <li>• تعديل lists أثناء الـ iteration</li>
+                            <li>• الاعتماد على integer caching</li>
+                            <li>• استخدام <code>is</code> مع numbers</li>
+                            <li>• nested loops بنفس الـ variable</li>
+                            <li>• تجاهل exceptions</li>
+                            <li>• استخدام <code>eval</code> بدون حذر</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h3 class="text-xl font-semibold mb-3 text-blue-700">
+                    <i class="fas fa-lightbulb ml-2"></i>
+                    نصائح للتطوير
+                </h3>
+                <div class="syntax-highlight code-font">
+<pre><code><span class="comment"># 1. استخدم type hints</span>
+<span class="keyword">def</span> <span class="function">calculate_area</span>(length: <span class="keyword">float</span>, width: <span class="keyword">float</span>) -> <span class="keyword">float</span>:
+    <span class="keyword">return</span> length * width
+
+<span class="comment"># 2. استخدم docstrings</span>
+<span class="keyword">def</span> <span class="function">process_data</span>(data: <span class="keyword">list</span>) -> <span class="keyword">dict</span>:
+    <span class="string">"""
+    معالجة البيانات وإرجاع النتائج
+    
+    Args:
+        data: قائمة البيانات المراد معالجتها
+        
+    Returns:
+        dict: النتائج المعالجة
+        
+    Raises:
+        ValueError: إذا كانت البيانات فارغة
+    """</span>
+    <span class="keyword">if</span> <span class="keyword">not</span> data:
+        <span class="keyword">raise</span> ValueError(<span class="string">"البيانات فارغة"</span>)
+    <span class="keyword">return</span> {<span class="string">"count"</span>: <span class="keyword">len</span>(data)}
+
+<span class="comment"># 3. استخدم logging بدلاً من print</span>
+<span class="keyword">import</span> logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+<span class="keyword">def</span> <span class="function">important_function</span>():
+    logger.info(<span class="string">"بدء تنفيذ الدالة"</span>)
+    <span class="comment"># كود هنا</span>
+    logger.info(<span class="string">"انتهاء تنفيذ الدالة"</span>)
+
+<span class="comment"># 4. استخدم constants</span>
+MAX_RETRIES = <span class="number">3</span>
+DEFAULT_TIMEOUT = <span class="number">30</span>
+
+<span class="comment"># 5. استخدم pathlib للـ file paths</span>
+<span class="keyword">from</span> pathlib <span class="keyword">import</span> Path
+
+config_path = Path(<span class="string">"config"</span>) / <span class="string">"settings.json"</span>
+<span class="keyword">if</span> config_path.exists():
+    content = config_path.read_text(encoding=<span class="string">"utf-8"</span>)</code></pre>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h3 class="text-xl font-semibold mb-3 text-yellow-700">
+                    <i class="fas fa-tools ml-2"></i>
+                    أدوات التطوير المفيدة
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">🔧 Code Quality</h4>
+                        <ul class="text-sm space-y-1">
+                            <li>• <code>black</code> - تنسيق الكود</li>
+                            <li>• <code>isort</code> - ترتيب imports</li>
+                            <li>• <code>flake8</code> - فحص الكود</li>
+                            <li>• <code>mypy</code> - type checking</li>
+                            <li>• <code>pytest</code> - testing</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">🚀 Performance</h4>
+                        <ul class="text-sm space-y-1">
+                            <li>• <code>cProfile</code> - profiling</li>
+                            <li>• <code>memory_profiler</code> - memory usage</li>
+                            <li>• <code>line_profiler</code> - line-by-line</li>
+                            <li>• <code>numba</code> - JIT compilation</li>
+                            <li>• <code>asyncio</code> - async programming</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="solution-box">
+                <h3 class="text-xl font-semibold mb-3 text-green-700">
+                    <i class="fas fa-graduation-cap ml-2"></i>
+                    خطة التعلم المستمر
+                </h3>
+                <div class="space-y-4">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-blue-800 mb-2">📚 أسبوعياً</h4>
+                        <ul class="text-sm text-blue-700 space-y-1">
+                            <li>• راجع gotcha واحد وطبقه</li>
+                            <li>• اقرأ PEP جديد</li>
+                            <li>• جرب مكتبة جديدة</li>
+                            <li>• اكتب unit tests</li>
+                        </ul>
+                    </div>
+                    <div class="bg-purple-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-purple-800 mb-2">🎯 شهرياً</h4>
+                        <ul class="text-sm text-purple-700 space-y-1">
+                            <li>• اعمل refactor لكود قديم</li>
+                            <li>• اكتب مقال عن تجربتك</li>
+                            <li>• شارك في مشروع open source</li>
+                            <li>• راجع أداء الكود</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="bg-gray-800 text-white rounded-lg p-6 text-center">
+            <h3 class="text-xl font-semibold mb-3">
+                <i class="fas fa-heart text-red-400 ml-2"></i>
+                تذكر دائماً
+            </h3>
+            <p class="text-gray-300 mb-4">
+                "الكود الذي تكتبه اليوم هو الكود الذي ستقرأه غداً"
+            </p>
+            <div class="text-sm text-gray-400">
+                <p>مرجع Python Gotchas المتقدم • أعده خصيصاً لك</p>
+                <p>استمر في التعلم واكتب كوداً أفضل! 🚀</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
